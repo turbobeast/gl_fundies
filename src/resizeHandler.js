@@ -1,22 +1,22 @@
 "use strict";
 
-module.exports = {
+export default class Resize {
 
-  listeners: [],
-  listening: false,
-  resizeTimer: null,
+  constructor () {
+    this.listeners = [];
+    this.listening = false;
+    this.resizeTimer = null;
+  }
 
-
-  handleResize (e) {
+  handleResize () {
     if(this.resizeTimer) {
       clearTimeout(this.resizeTimer);
     }
 
     this.resizeTimer = setTimeout(this.heavyLifting.bind(this), 200);
-  },
+  }
 
-  heavyLifting (e) {
-    console.dir(this);
+  heavyLifting () {
     this.resizeTimer = null;
     let i = 0;
     let width = window.innerWidth;
@@ -25,21 +25,19 @@ module.exports = {
     for(i = 0; i < this.listeners.length; i += 1) {
       this.listeners[i](width, height);
     }
-  },
+  }
 
   registerListener (func) {
     if(typeof func === 'function') {
-      this.listeners.push(func);
+      this.listeners.push(func.bind(this));
     } else {
       throw 'come on, send a function!';
     }
 
     if(!this.listening) {
-      window.addEventListener('resize', this.handleResize);
+      window.addEventListener('resize', this.handleResize.bind(this));
     }
-    this.handleResize(null);
+    this.heavyLifting(null);
     return this.listeners.length-1;
   }
-
-
-};
+}
