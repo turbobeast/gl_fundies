@@ -18,6 +18,27 @@ export default class GLUtils {
             bottomRight.x, bottomRight.y];
   }
 
+  static cube (xPos, yPos, depth) {
+    let halfDepth = depth * 0.5;
+
+    let a = { x: xPos - halfDepth, y: yPos - halfDepth, z: -halfDepth }; //topLeftFront
+    let b = { x: xPos + halfDepth, y: yPos - halfDepth, z: -halfDepth }; //topRightFront
+    let c = { x: xPos - halfDepth, y: yPos + halfDepth, z: -halfDepth }; //bottomLeftFront
+    let d = { x: xPos + halfDepth, y: yPos + halfDepth, z: -halfDepth }; //bottomLeftBack
+    let e = { x: xPos + halfDepth, y: yPos - halfDepth, z: halfDepth };
+    let f = { x: xPos + halfDepth, y: yPos + halfDepth, z: halfDepth };
+    let g = { x: xPos - halfDepth, y: yPos - halfDepth, z: halfDepth };
+    let h = { x: xPos - halfDepth, y: yPos + halfDepth, z: halfDepth};
+    
+    let order = [c,a,b,c,d,b, d,b,e,d,f,e, f,e,g,f,h,g, h,g,a,h,c,a, a,g,e,a,b,e, f,h,c,f,d,c ];
+
+    let verts = [];
+    for(let i = 0; i< order.length; i += 1 ) {
+      verts.push(order[i].x, order[i].y, order[i].z)
+    }
+    return verts;
+  }
+
   static quad3 (xPos, yPos, width, height) {
     let halfWidth = width * 0.5;
     let halfHeight = height * 0.5;
@@ -48,7 +69,6 @@ export default class GLUtils {
     }
     return transCoords;
   }
-
 
   static toWebGLSpace (coords, canvas) {
     let width = canvas ? canvas.width : window.innerWidth;
