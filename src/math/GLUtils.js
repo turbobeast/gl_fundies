@@ -28,8 +28,8 @@ export default class GLUtils {
     let e = { x: xPos + halfDepth, y: yPos - halfDepth, z: halfDepth };
     let f = { x: xPos + halfDepth, y: yPos + halfDepth, z: halfDepth };
     let g = { x: xPos - halfDepth, y: yPos - halfDepth, z: halfDepth };
-    let h = { x: xPos - halfDepth, y: yPos + halfDepth, z: halfDepth};
-    
+    let h = { x: xPos - halfDepth, y: yPos + halfDepth, z: halfDepth };
+
     let order = [c,a,b,c,d,b, d,b,e,d,f,e, f,e,g,f,h,g, h,g,a,h,c,a, a,g,e,a,b,e, f,h,c,f,d,c ];
 
     let verts = [];
@@ -38,6 +38,7 @@ export default class GLUtils {
     }
     return verts;
   }
+
 
   static quad3 (xPos, yPos, width, height) {
     let halfWidth = width * 0.5;
