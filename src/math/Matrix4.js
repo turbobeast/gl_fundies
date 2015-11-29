@@ -147,6 +147,12 @@ export default class Matrix4 {
     return new Vector4(x,y,z,w);
   }
 
+  persps (z) {
+    var ident = this.identity();
+    ident.elements[11] = z;
+    return ident;
+  }
+
 
   translate (x,y,z) {
     var e = this.elements;

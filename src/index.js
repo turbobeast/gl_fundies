@@ -26,18 +26,14 @@ function randomCol () {
   return [r, g, b, a];
 }
 
-for(let i = 0; i < 40; i += 1) {
+for(let i = 0; i < 10; i += 1) {
   squares.push({
       elements: GLUtils.cube( 0, 0, Math.random() * 0.2),
-      offset: new Matrix4().translate(Math.random() * 2 - 1, Math.random() * 2 -1, Math.random() * 2 -1 ),
+      offset: new Matrix4().translate(Math.random() * 2 - 1, Math.random() * 2 -1, Math.random() + 0.5),
       color: randomCol()
     });
 }
 
-// for(let i = 0; i < squares.length; i += 1) {
-//   combinedSquares = combinedSquares.concat(squares[i]);
-// }
-//var square = GLUtils.cube(0,0,0.3);
 
 GLBuffer.vertexBuffer(gl, program, combinedSquares, 3, "a_position");
 
@@ -51,22 +47,54 @@ transMat = transMat.createYRotMatrix(2).multiply(new Matrix4().createXRotMatrix(
 gl.uniformMatrix4fv(transMatLoc, false, transMat.elements);
 gl.uniform4fv(colorLoc, [1.0, 0.1, 0.2, 1.0]);
 
-var yRot = 0;
-setInterval(() => {
-  gl.clearColor(0.0,0.0,0.0,1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  yRot += 0.01;
-  transMat = transMat.createYRotMatrix(yRot).multiply(new Matrix4().createXRotMatrix(-yRot + 1));
-  for(let i = 0; i < squares.length; i += 1) {
-    GLBuffer.vertexBuffer(gl, program, squares[i].elements, 3, "a_position");
+var cameraLoc = gl.getUniformLocation(program, 'u_camera');
+var camera = new Matrix4();
 
+
+var yRot = 0;
+var zVel = 0;
+var zAccel = 0;
+var zPos = 0;
+window.addEventListener("keydown", event => {
+  event.preventDefault();
+  if(event.keyCode == 38) {
+    zAccel = 0.001;
+  } else if (event.keyCode == 40) {
+    zAccel = -0.001;
+  }
+}, false);
+
+window.addEventListener("keyup", event => {
+  event.preventDefault();
+  zAccel = 0;
+}, false);
+
+  //gl.enable(gl.CULL_FACE);
+  gl.enable(gl.DEPTH_TEST);
+function looper () {
+  gl.clearColor(0.0,0.0,0.0,1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  yRot += 0.01;
+
+  zVel += zAccel;
+  zVel *= 0.99;
+  zPos += zVel;
+  camera = camera.persps(zPos);
+
+  transMat = transMat.createYRotMatrix(yRot).multiply(new Matrix4().createXRotMatrix(-yRot + 1));
+  gl.uniformMatrix4fv(rotMatLoc, false, transMat.elements);
+  gl.uniformMatrix4fv(cameraLoc, false, camera.elements);
+  for(let i = 0; i < squares.length; i += 1) {
+
+    GLBuffer.vertexBuffer(gl, program, squares[i].elements, 3, "a_position");
     gl.uniformMatrix4fv(transMatLoc, false, squares[i].offset.elements);
-    gl.uniformMatrix4fv(rotMatLoc, false, transMat.elements);
     gl.uniform4fv(colorLoc, squares[i].color);
     gl.drawArrays(gl.TRIANGLES, 0, squares[i].elements.length / 3);
-
     gl.uniform4fv(colorLoc, [1,0,0,1]);
     gl.drawArrays(gl.LINES, 0, squares[i].elements.length / 3);
-
   }
-}, 1000/60);
+
+  requestAnimationFrame(looper);
+}
+
+looper();
