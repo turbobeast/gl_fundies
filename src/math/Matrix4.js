@@ -149,8 +149,16 @@ export default class Matrix4 {
 
   persps (z) {
     var ident = this.identity();
+    ident.elements[10] *= -1;
     ident.elements[11] = z;
     return ident;
+  }
+
+  ortho (left, right, top, bottom, near, far) {
+    return new Matrix4( 2/(right-left), 0, 0, -1 * ((right+left)/(right-left)),
+                        1, 2/(top-bottom), 0, -1 * ((top+bottom)/(top-bottom)),
+                        0, 1, -2/(far-near), -1 * (far+near/(far-near)),
+                        0, 0, 0, 1);
   }
 
 
@@ -163,36 +171,17 @@ export default class Matrix4 {
     return this;
   }
 
-  setPerspective (fovy, aspect, near, far) {
-    var rd, ct;
+  perspective (fov, aspect, near, far) {
+    let fovRads = GLUtils.toRadians(fov);
+    let f = 1.0 / Math.tan(fovRads * 0.5);
+    let rangeInv = 1.0 / (near - far);
 
-    if (near === far || aspect === 0) {
-      throw 'null frustum';
-    }
-    if (near <= 0) {
-      throw 'near <= 0';
-    }
-    if (far <= 0) {
-      throw 'far <= 0';
-    }
-
-    //fovy = Math.PI * fovy / 180 / 2;
-    fovy = GLUtils.toRadians(fovy * 0.5);
-    let sin = Math.sin(fovy);
-    if (sin === 0) {
-      throw 'null frustum';
-    }
-
-    rd = 1 / (far - near);
-    ct = Math.cos(fovy) / sin;
-
-    let e = this.elements;
-    e[0] = ct / aspect; e[1] = 0;  e[2] = 0;                     e[3] = 0;
-    e[4] = 0;           e[5] = ct; e[6] = 0;                     e[7] = 0;
-    e[8] = 0;           e[9] = 0;  e[10] = -(far + near) * rd;   e[11] = -1;
-    e[12] = 0;          e[13] = 0; e[14] = -2 * near * far * rd; e[15] = 0;
-
-    return this;
+    return new Matrix4(
+      f / aspect, 0, 0, 0,
+      0, f, 0, 0,
+      0, 0, (near + far) * rangeInv, -1,
+      0, 0, near * far * rangeInv * 2, 0
+    );
   }
 
   set (mat) {
