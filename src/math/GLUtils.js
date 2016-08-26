@@ -24,19 +24,17 @@ export default class GLUtils {
     let a = { x: xPos - halfDepth, y: yPos - halfDepth, z: -halfDepth } // topLeftFront
     let b = { x: xPos + halfDepth, y: yPos - halfDepth, z: -halfDepth } // topRightFront
     let c = { x: xPos - halfDepth, y: yPos + halfDepth, z: -halfDepth } // bottomLeftFront
-    let d = { x: xPos + halfDepth, y: yPos + halfDepth, z: -halfDepth } // bottomLeftBack
-    let e = { x: xPos + halfDepth, y: yPos - halfDepth, z: halfDepth }
-    let f = { x: xPos + halfDepth, y: yPos + halfDepth, z: halfDepth }
-    let g = { x: xPos - halfDepth, y: yPos - halfDepth, z: halfDepth }
-    let h = { x: xPos - halfDepth, y: yPos + halfDepth, z: halfDepth }
+    let d = { x: xPos + halfDepth, y: yPos + halfDepth, z: -halfDepth } //
 
-    let order = [
-      c, a, b, c, d, b,
-      d, b, e, d, f, e,
-      f, e, g, f, h, g,
-      h, g, a, h, c, a,
-      a, g, e, a, b, e,
-      f, h, c, f, d, c]
+    let e = { x: xPos - halfDepth, y: yPos - halfDepth, z: halfDepth } // topLeftFront
+    let f = { x: xPos + halfDepth, y: yPos - halfDepth, z: halfDepth } // topRightFront
+    let g = { x: xPos - halfDepth, y: yPos + halfDepth, z: halfDepth } // bottomLeftFront
+    let h = { x: xPos + halfDepth, y: yPos + halfDepth, z: halfDepth } //
+
+    let order = [c, d, b, c, a, b,
+                 d, h, f, d, b, f,
+                 h, g, e, h, f, e,
+                 g, c, a, g, e, a ]
 
     let verts = []
     for (let i = 0; i < order.length; i += 1) {
